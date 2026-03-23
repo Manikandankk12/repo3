@@ -8,9 +8,11 @@ pipeline {
                     #!/bin/bash
                     DIR_NAME="/home/administrator/mcet"
 
-                    sudo mkdir -p "$DIR_NAME" || { echo "Failed to create directory"; exit 1; }
+                    # Try to create directory
+                    sudo mkdir -p "$DIR_NAME"
 
-                    if [ -d "$DIR_NAME" ]; then
+                    # Verify with sudo ls
+                    if sudo test -d "$DIR_NAME"; then
                         echo "Directory created successfully: $DIR_NAME"
                     else
                         echo "Directory not created: $DIR_NAME"
@@ -27,13 +29,13 @@ pipeline {
                     DIR_NAME="/home/administrator/mcet"
                     FILE_NAME="$DIR_NAME/hello.sh"
 
-                    if [ -d "$DIR_NAME" ]; then
+                    if sudo test -d "$DIR_NAME"; then
                         echo '#!/bin/bash' | sudo tee "$FILE_NAME" > /dev/null
                         echo 'echo Hello from MCET!' | sudo tee -a "$FILE_NAME" > /dev/null
                         sudo chmod +x "$FILE_NAME"
                         echo "File created: $FILE_NAME"
                     else
-                        echo "Directory not found, cannot create file."
+                        echo "Directory not found: $DIR_NAME"
                         exit 1
                     fi
                 '''
@@ -46,8 +48,8 @@ pipeline {
                     #!/bin/bash
                     FILE_NAME="/home/administrator/mcet/hello.sh"
 
-                    if [ -f "$FILE_NAME" ]; then
-                        bash "$FILE_NAME"
+                    if sudo test -f "$FILE_NAME"; then
+                        sudo bash "$FILE_NAME"
                     else
                         echo "File not found: $FILE_NAME"
                         exit 1
@@ -63,11 +65,11 @@ pipeline {
                     DIR_NAME="/home/administrator/mcet"
                     FILE_NAME="$DIR_NAME/hello.sh"
 
-                    if [ -f "$FILE_NAME" ]; then
+                    if sudo test -f "$FILE_NAME"; then
                         sudo chmod 755 "$DIR_NAME"
                         sudo chmod 744 "$FILE_NAME"
                         echo "Permissions updated:"
-                        ls -l "$DIR_NAME"
+                        sudo ls -l "$DIR_NAME"
                     else
                         echo "File not found, cannot change permissions."
                         exit 1
