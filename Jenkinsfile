@@ -2,18 +2,19 @@ pipeline {
     agent any
 
     stages {
-        stage('Check/Create Directory') {
+        stage('Create Directory') {
             steps {
                 sh '''
                     #!/bin/bash
                     DIR_NAME="/home/administrator/mcet"
-                    ALIAS_NAME="MCET"
 
-                    if [ ! -d "$DIR_NAME" ]; then
-                        sudo mkdir -p "$DIR_NAME" || { echo "Failed to create directory"; exit 1; }
-                        echo "Directory created: $DIR_NAME (alias: $ALIAS_NAME)"
+                    sudo mkdir -p "$DIR_NAME" || { echo "Failed to create directory"; exit 1; }
+
+                    if [ -d "$DIR_NAME" ]; then
+                        echo "Directory created successfully: $DIR_NAME"
                     else
-                        echo "Directory already exists: $DIR_NAME (alias: $ALIAS_NAME)"
+                        echo "Directory not created: $DIR_NAME"
+                        exit 1
                     fi
                 '''
             }
@@ -32,7 +33,7 @@ pipeline {
                         sudo chmod +x "$FILE_NAME"
                         echo "File created: $FILE_NAME"
                     else
-                        echo "Directory not found: $DIR_NAME"
+                        echo "Directory not found, cannot create file."
                         exit 1
                     fi
                 '''
