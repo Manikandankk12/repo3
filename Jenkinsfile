@@ -5,9 +5,19 @@ pipeline {
         stage('Create Directory') {
             steps {
                 sh '''
-                    DIR_NAME="$WORKSPACE/myfolder"
-                    mkdir -p "$DIR_NAME" || { echo "Failed to create directory"; exit 1; }
-                    echo "Directory created: $DIR_NAME"
+                    #!/bin/bash
+                    DIR_NAME="/home/administrator/myfolder"
+
+                    # Try to create directory with sudo
+                    sudo mkdir -p "$DIR_NAME"
+
+                    # Check if directory exists
+                    if [ -d "$DIR_NAME" ]; then
+                        echo "Directory created: $DIR_NAME"
+                    else
+                        echo "Failed to create directory: $DIR_NAME"
+                        exit 1
+                    fi
                 '''
             }
         }
@@ -15,10 +25,17 @@ pipeline {
         stage('Create File') {
             steps {
                 sh '''
-                    FILE_NAME="$WORKSPACE/myfolder/hello.sh"
-                    echo '#!/bin/bash' > "$FILE_NAME"
-                    echo 'echo Hello from Jenkins!' >> "$FILE_NAME"
-                    echo "File created: $FILE_NAME"
+                    #!/bin/bash
+                    FILE_NAME="/home/administrator/myfolder/hello.sh"
+
+                    if [ -d "/home/administrator/myfolder" ]; then
+                        echo '#!/bin/bash' > "$FILE_NAME"
+                        echo 'echo Hello from Jenkins!' >> "$FILE_NAME"
+                        echo "File created: $FILE_NAME"
+                    else
+                        echo "Directory not found, skipping file creation."
+                        exit 1
+                    fi
                 '''
             }
         }
@@ -26,7 +43,9 @@ pipeline {
         stage('Execute File') {
             steps {
                 sh '''
-                    FILE_NAME="$WORKSPACE/myfolder/hello.sh"
+                    #!/bin/bash
+                    FILE_NAME="/home/administrator/myfolder/hello.sh"
+
                     if [ -f "$FILE_NAME" ]; then
                         bash "$FILE_NAME"
                     else
@@ -40,14 +59,10 @@ pipeline {
         stage('Change Permissions') {
             steps {
                 sh '''
-                    DIR_NAME="$WORKSPACE/myfolder"
+                    #!/bin/bash
+                    DIR_NAME="/home/administrator/myfolder"
                     FILE_NAME="$DIR_NAME/hello.sh"
-                    chmod 755 "$DIR_NAME"
-                    chmod 744 "$FILE_NAME"
-                    ls -l "$DIR_NAME"
-                '''
-            }
-        }
-    }
-}
 
+                    if [ -f "$FILE_NAME" ]; then
+                        sudo chmod 755 "$DIR_NAME"
+                        sudo chmod 744 "$FILE_NAME"
