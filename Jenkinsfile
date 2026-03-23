@@ -6,15 +6,15 @@ pipeline {
             steps {
                 sh '''
                     #!/bin/bash
-                    DIR_NAME="/home/administrator/myfolder"
+                    DIR_NAME="/home/administrator/mcet"
                     ALIAS_NAME="MCET"
 
-                    # If directory exists, just confirm; otherwise try to create
-                    if [ -d "$DIR_NAME" ]; then
-                        echo "Directory already exists: $DIR_NAME (alias: $ALIAS_NAME)"
-                    else
+                    # Create directory if not exists
+                    if [ ! -d "$DIR_NAME" ]; then
                         sudo mkdir -p "$DIR_NAME" || { echo "Failed to create directory"; exit 1; }
                         echo "Directory created: $DIR_NAME (alias: $ALIAS_NAME)"
+                    else
+                        echo "Directory already exists: $DIR_NAME (alias: $ALIAS_NAME)"
                     fi
                 '''
             }
@@ -24,11 +24,11 @@ pipeline {
             steps {
                 sh '''
                     #!/bin/bash
-                    FILE_NAME="/home/administrator/myfolder/hello.sh"
+                    FILE_NAME="/home/administrator/mcet/hello.sh"
 
-                    if [ -d "/home/administrator/myfolder" ]; then
-                        echo '#!/bin/bash' > "$FILE_NAME"
-                        echo 'echo Hello from MCET!' >> "$FILE_NAME"
+                    if [ -d "/home/administrator/mcet" ]; then
+                        echo '#!/bin/bash' | sudo tee "$FILE_NAME" > /dev/null
+                        echo 'echo Hello from MCET!' | sudo tee -a "$FILE_NAME" > /dev/null
                         echo "File created: $FILE_NAME"
                     else
                         echo "Directory not found, skipping file creation."
@@ -42,7 +42,7 @@ pipeline {
             steps {
                 sh '''
                     #!/bin/bash
-                    FILE_NAME="/home/administrator/myfolder/hello.sh"
+                    FILE_NAME="/home/administrator/mcet/hello.sh"
 
                     if [ -f "$FILE_NAME" ]; then
                         bash "$FILE_NAME"
@@ -58,7 +58,7 @@ pipeline {
             steps {
                 sh '''
                     #!/bin/bash
-                    DIR_NAME="/home/administrator/myfolder"
+                    DIR_NAME="/home/administrator/mcet"
                     FILE_NAME="$DIR_NAME/hello.sh"
 
                     if [ -f "$FILE_NAME" ]; then
