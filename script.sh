@@ -1,21 +1,9 @@
 #!/bin/bash
-
-# Absolute path for the directory
-DIR_NAME="/home/administrator/myfolder"
-
-# Create the directory (use -p to avoid error if it already exists)
-sudo mkdir -p "$DIR_NAME"
-
-# Create a sample file inside the directory
-echo "This is a test file" > "$DIR_NAME/test.txt"
-
-# Change permissions: make directory readable/writable/executable by owner
-sudo chmod 755 "$DIR_NAME"
-
-# Change file permissions: owner can read/write, others can only read
-sudo chmod 644 "$DIR_NAME/test.txt"
-
-# Print confirmation
-echo "Directory '$DIR_NAME' created and permissions set."
-ls -l "$DIR_NAME"
-
+TARGET_DIR="/home/administrator/myfolder"
+TARGET_FILE="$TARGET_DIR/myfile.txt"
+sudo mkdir -p "$TARGET_DIR"
+sudo touch "$TARGET_FILE"
+sudo chmod 755 "$TARGET_DIR"
+sudo chmod 644 "$TARGET_FILE"
+sudo chown administrator:administrator "$TARGET_DIR" "$TARGET_FILE"
+echo "Jenkins job completed"
