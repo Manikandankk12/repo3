@@ -2,21 +2,19 @@ pipeline {
     agent any
 
     stages {
-        stage('Create Directory') {
+        stage('Check/Create Directory') {
             steps {
                 sh '''
                     #!/bin/bash
                     DIR_NAME="/home/administrator/myfolder"
+                    ALIAS_NAME="MCET"
 
-                    # Try to create directory with sudo
-                    sudo mkdir -p "$DIR_NAME"
-
-                    # Check if directory exists
+                    # If directory exists, just confirm; otherwise try to create
                     if [ -d "$DIR_NAME" ]; then
-                        echo "Directory created: $DIR_NAME"
+                        echo "Directory already exists: $DIR_NAME (alias: $ALIAS_NAME)"
                     else
-                        echo "Failed to create directory: $DIR_NAME"
-                        exit 1
+                        sudo mkdir -p "$DIR_NAME" || { echo "Failed to create directory"; exit 1; }
+                        echo "Directory created: $DIR_NAME (alias: $ALIAS_NAME)"
                     fi
                 '''
             }
@@ -30,7 +28,7 @@ pipeline {
 
                     if [ -d "/home/administrator/myfolder" ]; then
                         echo '#!/bin/bash' > "$FILE_NAME"
-                        echo 'echo Hello from Jenkins!' >> "$FILE_NAME"
+                        echo 'echo Hello from MCET!' >> "$FILE_NAME"
                         echo "File created: $FILE_NAME"
                     else
                         echo "Directory not found, skipping file creation."
@@ -66,3 +64,14 @@ pipeline {
                     if [ -f "$FILE_NAME" ]; then
                         sudo chmod 755 "$DIR_NAME"
                         sudo chmod 744 "$FILE_NAME"
+                        echo "Permissions updated:"
+                        ls -l "$DIR_NAME"
+                    else
+                        echo "File not found, cannot change permissions."
+                        exit 1
+                    fi
+                '''
+            }
+        }
+    }
+}
