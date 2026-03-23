@@ -23,8 +23,8 @@ pipeline {
             steps {
                 sh '''
                     #!/bin/bash
-                    FILE_NAME="/home/administrator/mcet/hello.sh"
                     DIR_NAME="/home/administrator/mcet"
+                    FILE_NAME="$DIR_NAME/hello.sh"
 
                     if [ -d "$DIR_NAME" ]; then
                         echo '#!/bin/bash' | sudo tee "$FILE_NAME" > /dev/null
