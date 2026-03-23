@@ -9,7 +9,6 @@ pipeline {
                     DIR_NAME="/home/administrator/mcet"
                     ALIAS_NAME="MCET"
 
-                    # Create directory if not exists
                     if [ ! -d "$DIR_NAME" ]; then
                         sudo mkdir -p "$DIR_NAME" || { echo "Failed to create directory"; exit 1; }
                         echo "Directory created: $DIR_NAME (alias: $ALIAS_NAME)"
@@ -25,13 +24,15 @@ pipeline {
                 sh '''
                     #!/bin/bash
                     FILE_NAME="/home/administrator/mcet/hello.sh"
+                    DIR_NAME="/home/administrator/mcet"
 
-                    if [ -d "/home/administrator/mcet" ]; then
+                    if [ -d "$DIR_NAME" ]; then
                         echo '#!/bin/bash' | sudo tee "$FILE_NAME" > /dev/null
                         echo 'echo Hello from MCET!' | sudo tee -a "$FILE_NAME" > /dev/null
+                        sudo chmod +x "$FILE_NAME"
                         echo "File created: $FILE_NAME"
                     else
-                        echo "Directory not found, skipping file creation."
+                        echo "Directory not found: $DIR_NAME"
                         exit 1
                     fi
                 '''
